@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
                     sbatch_script = create_sbatch(SRC_DIR.joinpath('run_semi_synthetic_experiment.py'), 
                                                   output_dir=out_dir, 
-                                                  script_exe=PYTHON_EXE_PATH,
+                                                  script_exe='python',
                                                   script_args=script_args, 
                                                   script_kwargs=script_kwargs, 
                                                   job_name=job_name, 

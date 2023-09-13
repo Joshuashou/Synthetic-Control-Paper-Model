@@ -72,9 +72,6 @@ def main(args=None):
 
 
 if __name__ == '__main__':
-    # args = ["-d", data_path, "--model_seed", "617"]
-    # main(args=args)
-    
     main()
 
 
