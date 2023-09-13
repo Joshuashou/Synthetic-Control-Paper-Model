@@ -25,7 +25,7 @@ DEFAULT_SBATCH_KWARGS = {
     'nodes': 1,
     'ntasks': 1,
     'mem-per-cpu': 4500,
-    'time': '3:00:00',
+    'time': '10:00:00',
     'mail-type': 'FAIL'
 }
 

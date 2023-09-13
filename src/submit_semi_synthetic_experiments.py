@@ -27,6 +27,9 @@ if __name__ == '__main__':
         data_attrs = data_attrs[1:-1]
         data_attr_str = '-'.join([attr.split('_')[-1] for attr in data_attrs])
         job_name = f'{team[:4]}-{data_attr_str}'
+
+        if team not in ['Philadelphia', 'Minnesota', 'Baltimore', 'New Orleans']:
+            continue
         
         for model in ['GAP']:
             for latent_dim in [10]:
@@ -69,4 +72,4 @@ if __name__ == '__main__':
                     print(out_dir.joinpath('sbatch.sh'))
 
                     result = run_sbatch(sbatch_script)
-                    sys.exit()
+                    # sys.exit()

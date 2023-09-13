@@ -37,7 +37,7 @@ def main(args=None):
     out_dir = args.out
     if out_dir is None:
         out_dir = args.data.parent
-    out_dir = out_dir.joinpath('results', args.model, f'latent_dim{args.latent_dim}', f'model_seed_{seed}')
+        out_dir = out_dir.joinpath('results', args.model, f'latent_dim{args.latent_dim}', f'model_seed_{seed}')
     out_dir.makedirs_p()
 
     # load data
@@ -60,8 +60,8 @@ def main(args=None):
     posterior_samples = run_NUTS_with_mask(model=model.model, 
                                            data=train_data,
                                            mask=mask,
-                                           warmup_steps=2,
-                                           num_samples=2)
+                                           warmup_steps=1000,
+                                           num_samples=2000)
     
     # covert to numpy
     posterior_samples = {k: v.numpy() for k, v in posterior_samples.items()}
