@@ -75,7 +75,7 @@ def main(args=None):
     # load test data
     test_pivot = pd.read_csv(args.data.parent.joinpath('test_pivot.csv'), index_col=0)
     total_pivot = pd.concat([train_pivot, test_pivot], axis=0)
-    intervention_t = train_pivot.values.allshape[0]
+    intervention_t = train_pivot.values.shape[0]
 
     # compute counterfactuals for every posterior sample using Ridge regression
     Z_samples = posterior_samples['Z']
