@@ -41,7 +41,7 @@ def create_sbatch(script_path, output_dir=Path('.'), script_exe=PY_EXEC_STR, scr
         f"#SBATCH --error={output_dir.joinpath('error.log')}",
         f"#SBATCH --job-name={job_name}",
         f"#SBATCH --account={cnet_id}",
-        f"#SBATCH --mail-user={cnet_id}@uchicago",
+        f"#SBATCH --mail-user={cnet_id}@uchicago.edu",
         sbatch_kwarg_str,
         source_str,
         f"# {script_exe} {script_path} {script_arg_str} {script_kwarg_str}"

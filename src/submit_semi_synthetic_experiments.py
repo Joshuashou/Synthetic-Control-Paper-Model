@@ -21,11 +21,13 @@ if __name__ == '__main__':
     SYNTH_DAT_DIR = Path('/net/projects/schein-lab/jshou/synth_dat')
     for data_path in tqdm(SYNTH_DAT_DIR.walkfiles('*train_pivot.csv')):
         data_dir = data_path.parent
+        
         data_attrs = Path(data_dir.split(SYNTH_DAT_DIR)[1]).splitall()[1:-1]
         team, data_seed = data_attrs[0], data_attrs[-1]
         data_attrs = data_attrs[1:-1]
         data_attr_str = '-'.join([attr.split('_')[-1] for attr in data_attrs])
         job_name = f'{team[:4]}-{data_attr_str}'
+        
         for model in ['GAP']:
             for latent_dim in [10]:
                 for seed in [617]:
@@ -51,8 +53,6 @@ if __name__ == '__main__':
                         'time': '3:00:00',
                         'mail-type': 'FAIL'
                     }
-
-                    python_exe_path = sys.executable
 
                     sbatch_script = create_sbatch(SRC_DIR.joinpath('run_semi_synthetic_experiment.py'), 
                                                   output_dir=out_dir, 
