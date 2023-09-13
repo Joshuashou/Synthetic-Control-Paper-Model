@@ -8,9 +8,6 @@ SRC_DIR = Path(__file__).parent
 if '/home/jshou' not in SRC_DIR and '/home/schein' not in SRC_DIR:
     raise NotImplementedError('This script is only configured to run for CNET-IDs: {jshou, schein}.')
 
-# get full path to the python build that is executing this script
-PY_EXEC_STR = sys.executable
-
 # TODO: be more programmatic about this; this is hard-coded for just jshou/schein
 CNET_ID = 'jshou' if 'jshou' in SRC_DIR else 'schein'
 if CNET_ID == 'schein': 
@@ -18,15 +15,7 @@ if CNET_ID == 'schein':
 elif CNET_ID == 'jshou':
     PY_SOURCE_STR = '# source /home/jshou/miniconda3/etc/profile.d/conda.sh\n# conda activate /home/jshou/miniconda3/envs/sc_env'
 
-
-DEFAULT_SBATCH_KWARGS = {
-    'partition': 'general',
-    'nodes': 1,
-    'ntasks': 1,
-    'mem-per-cpu': 4500,
-    'time': '3:00:00',
-    'mail-type': 'FAIL'
-}
+PYTHON_EXE_PATH = sys.executable
 
 if __name__ == '__main__':
     SYNTH_DAT_DIR = Path('/net/projects/schein-lab/jshou/synth_dat')
@@ -54,17 +43,30 @@ if __name__ == '__main__':
                          'latent_dim': latent_dim
                     }
 
+                    sbatch_kwargs = {
+                        'partition': 'general',
+                        'nodes': 1,
+                        'ntasks': 1,
+                        'mem-per-cpu': 4500,
+                        'time': '3:00:00',
+                        'mail-type': 'FAIL'
+                    }
+
+                    python_exe_path = sys.executable
+
                     sbatch_script = create_sbatch(SRC_DIR.joinpath('run_semi_synthetic_experiment.py'), 
                                                   output_dir=out_dir, 
-                                                  script_exe=PY_EXEC_STR, 
+                                                  script_exe=PYTHON_EXE_PATH,
                                                   script_args=script_args, 
                                                   script_kwargs=script_kwargs, 
                                                   job_name=job_name, 
                                                   cnet_id=CNET_ID, 
-                                                  sbatch_kwargs=DEFAULT_SBATCH_KWARGS,
+                                                  sbatch_kwargs=sbatch_kwargs,
                                                   source_str=PY_SOURCE_STR)
 
-                    # result = run_sbatch(sbatch_script)
-                    with open('test_sbatch.sh', 'w') as f:
+                    with open(out_dir.joinpath('sbatch.sh'), 'w') as f:
                         f.write(sbatch_script)
+                    print(out_dir.joinpath('sbatch.sh'))
+
+                    result = run_sbatch(sbatch_script)
                     sys.exit()
