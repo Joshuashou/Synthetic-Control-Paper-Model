@@ -36,6 +36,8 @@ if __name__ == '__main__':
                 for seed in [617]:
                     out_dir = data_dir.joinpath('results', model, f'latent_dim_{latent_dim}', f'model_seed_{seed}')
                     out_dir.makedirs_p()
+                    if out_dir.joinpath('posterior_samples.npz').exists():
+                        continue
 
                     team = Path(data_path.split(SYNTH_DAT_DIR)[1]).splitall()[1]
 
