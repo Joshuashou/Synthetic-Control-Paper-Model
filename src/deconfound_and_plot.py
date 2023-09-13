@@ -79,9 +79,10 @@ def get_reg_arrays(Z, all_outcomes_TN, intervention_t, counterfactual=False, inc
     return X, Y
 
 
-def get_counterfactual_from_best_reg(Z, all_outcomes_TN, intervention_t, include_previous_outcome=True,
+def get_counterfactual_from_best_reg(Z, total_pivot, intervention_t, include_previous_outcome=True,
                                      reg_type='Ridge', reg_params={"alpha": [0, 1e-4,1e-3, 1e-2]}):
     
+    all_outcomes_TN = total_pivot.values
     X, Y = get_reg_arrays(Z, all_outcomes_TN, intervention_t, include_previous_outcome=include_previous_outcome)
 
     if reg_type == 'Ridge':
@@ -99,7 +100,8 @@ def get_counterfactual_from_best_reg(Z, all_outcomes_TN, intervention_t, include
     return best_reg.predict(X)[-1], best_reg  # return only affected county and model
 
 
-def plot_counterfactual_trajectories(total_pivot, intervention_t, counterfactual_preds, rsc_test_pred, team, fig_path=None):
+def plot_counterfactual_trajectories(total_pivot, intervention_t, counterfactual_preds, reference_pred=None, reference_label='Robust SC', 
+                                     CI=90, fig_title='', fig_path=None):
     all_outcomes_TN = total_pivot.values
     dates = pd.to_datetime(total_pivot.index)
 
@@ -107,28 +109,30 @@ def plot_counterfactual_trajectories(total_pivot, intervention_t, counterfactual
     plt.axvline(dates[intervention_t], color='k', lw=1, linestyle='-', label='Day of intervention')
     
     # Compute percentiles and median across trajectories for each time point
-    lower_bound = np.percentile(counterfactual_preds, 5, axis=0)
-    upper_bound = np.percentile(counterfactual_preds, 95, axis=0)
+    alpha = 100 - CI
+    lower_bound = np.percentile(counterfactual_preds, alpha / 2, axis=0)
+    upper_bound = np.percentile(counterfactual_preds, 100 - alpha / 2, axis=0)
     median_trajectory = np.median(counterfactual_preds, axis=0)
 
     post_dates = dates[intervention_t:]
-    plt.fill_between(post_dates, lower_bound, upper_bound, color='blue', alpha=0.1, label='90% posterior credible interval')
-    plt.plot(post_dates, median_trajectory, color='blue', linestyle=':', lw=3, label='Posterior median counterfactual')
-    plt.plot(post_dates, rsc_test_pred, color='green', linestyle='--', lw=3, label='Robust SC counterfactual')
+    plt.fill_between(post_dates, lower_bound, upper_bound, color='blue', alpha=0.1, label=f'{CI}% posterior credible interval')
+    plt.plot(post_dates, median_trajectory, color='blue', linestyle=':', lw=3, label='Posterior median')
+    if reference_pred is not None:
+        plt.plot(post_dates, reference_pred, color='green', linestyle='--', lw=3, label=reference_label)
     plt.legend(fontsize=13)
-    plt.title(team, fontsize=17)
-    plt.xlabel('Day', fontsize=13)
+    plt.title(fig_title, fontsize=17)
+    plt.xlabel('Day', fontsize=14)
 
     ax = plt.gca()
-    ax.xaxis.set_major_locator(mdates.MonthLocator(bymonth=[1, 3, 5, 7, 9, 11]))  # Every month
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))  # Month and year
+    ax.xaxis.set_major_locator(mdates.MonthLocator(bymonth=[5, 7, 9, 11]))  # Every month
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b'))  # Month and year
     # Format y-ticks to show 'K' for thousands
-    def thousands_formatter(x):
+    def thousands_formatter(x, pos):
         return '%1.0fK' % (x*1e-3)
     ax.yaxis.set_major_formatter(ticker.FuncFormatter(thousands_formatter))
     plt.xticks(fontsize=13)
     plt.yticks(fontsize=13)
-    plt.ylabel('Number of new COVID-19 cases', fontsize=13)
+    plt.ylabel('COVID-19 case counts', fontsize=14)
 
     plt.gcf().set_size_inches(10, 6)  # Set the figure size (width, height)
     plt.tight_layout() 
@@ -180,15 +184,12 @@ if __name__ == "__main__":
     np.save(model_team_k_outdir.joinpath('Z_samples.npy'), Z_samples)
     
     # compute counterfactuals for every posterior sample using Ridge regression
-    counterfactual_preds = []
-    for Z in Z_samples:
-        cf_pred, best_reg = get_counterfactual_from_best_reg(Z,
-                                                    reg_type=args.reg_type,
-                                                    all_outcomes_TN=all_outcomes_TN, 
-                                                    intervention_t=intervention_t, 
-                                                    include_previous_outcome=args.include_previous_outcome)
-        counterfactual_preds.append(cf_pred)
-    counterfactual_preds = np.array(counterfactual_preds)
+    func = lambda z: get_counterfactual_from_best_reg(z,
+                                                      total_pivot=total_pivot, 
+                                                      intervention_t=intervention_t, 
+                                                      reg_type=args.reg_type,
+                                                      include_previous_outcome=args.include_previous_outcome)[0]
+    counterfactual_preds = np.array([func(Z) for Z in Z_samples])
 
     final_outdir = model_team_k_outdir.joinpath(f'reg_type_{args.reg_type}', f'include_prev_{args.include_previous_outcome}')
     final_outdir.makedirs_p()
@@ -199,8 +200,8 @@ if __name__ == "__main__":
     plot_counterfactual_trajectories(total_pivot=total_pivot, 
                                      intervention_t=intervention_t, 
                                      counterfactual_preds=counterfactual_preds, 
-                                     rsc_test_pred=rsc_test_pred,
-                                     team=args.team,
+                                     reference_pred=rsc_test_pred,
+                                     fig_title=args.team,
                                      fig_path=fig_path)
     print(fig_path)
 

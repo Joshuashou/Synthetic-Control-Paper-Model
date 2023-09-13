@@ -10,6 +10,7 @@ from path import Path
 from argparse import ArgumentParser
 
 from bayesian_factor_model import PPCA, GAP, run_NUTS_with_mask
+from deconfound_and_plot import get_counterfactual_from_best_reg
 
 
 def main(args=None):
@@ -20,6 +21,7 @@ def main(args=None):
     p.add_argument('--model', type=str, default='GAP', choices=['GAP', 'PPCA'])
     p.add_argument('--model_seed', type=int, default=None)
     p.add_argument('-k', '--latent_dim', type=int, default=10)
+    p.add_argument('--reg_type', type=str, default='Ridge', options=['Ridge', 'Lasso', 'MLPRegressor'])
 
     if args is None:
         args = sys.argv[1:]
@@ -69,7 +71,22 @@ def main(args=None):
     # save using np.savez_compressed
     np.savez_compressed(out_dir.joinpath('posterior_samples.npz'), **posterior_samples)
     print(out_dir.joinpath('posterior_samples.npz'))
+    
+    # load test data
+    test_pivot = pd.read_csv(args.data.parent.joinpath('test_pivot.csv'), index_col=0)
+    total_pivot = pd.concat([train_pivot, test_pivot], axis=0)
+    intervention_t = train_pivot.values.allshape[0]
 
+    # compute counterfactuals for every posterior sample using Ridge regression
+    Z_samples = posterior_samples['Z']
+    func = lambda z: get_counterfactual_from_best_reg(z,
+                                                      total_pivot=total_pivot, 
+                                                      intervention_t=intervention_t, 
+                                                      reg_type=args.reg_type,
+                                                      include_previous_outcome=True)[0]
+    
+    counterfactual_preds = np.array([func(Z) for Z in Z_samples])
+    np.save(out_dir.joinpath('counterfactuals.npy'), counterfactual_preds) 
 
 if __name__ == '__main__':
     main()
