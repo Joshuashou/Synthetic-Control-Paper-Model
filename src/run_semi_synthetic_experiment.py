@@ -51,26 +51,29 @@ def main(args=None):
     if mask is not None:
         mask = torch.load(args.mask)
 
-    # setup model
-    if args.model == 'GAP':
-        model = GAP(latent_dim=args.latent_dim, shp=1.0, rte=1.0)
+    if not out_dir.joinpath('posterior_samples.npz').exists():
+        # setup model
+        if args.model == 'GAP':
+            model = GAP(latent_dim=args.latent_dim, shp=1.0, rte=1.0)
+            
+        elif args.model == 'PPCA':
+            model = PPCA(latent_dim=args.latent_dim, variance_support=(0, 10))
+
+        # run MCMC
+        posterior_samples = run_NUTS_with_mask(model=model.model, 
+                                            data=train_data,
+                                            mask=mask,
+                                            warmup_steps=1000,
+                                            num_samples=2000)
         
-    elif args.model == 'PPCA':
-        model = PPCA(latent_dim=args.latent_dim, variance_support=(0, 10))
+        # covert to numpy
+        posterior_samples = {k: v.numpy() for k, v in posterior_samples.items()}
 
-    # run MCMC
-    posterior_samples = run_NUTS_with_mask(model=model.model, 
-                                           data=train_data,
-                                           mask=mask,
-                                           warmup_steps=1000,
-                                           num_samples=2000)
-    
-    # covert to numpy
-    posterior_samples = {k: v.numpy() for k, v in posterior_samples.items()}
-
-    # save using np.savez_compressed
-    np.savez_compressed(out_dir.joinpath('posterior_samples.npz'), **posterior_samples)
-    print(out_dir.joinpath('posterior_samples.npz'))
+        # save using np.savez_compressed
+        np.savez_compressed(out_dir.joinpath('posterior_samples.npz'), **posterior_samples)
+        print(out_dir.joinpath('posterior_samples.npz'))
+    else:
+        posterior_samples = np.load(out_dir.joinpath('posterior_samples.npz'))
     
     # load test data
     test_pivot = pd.read_csv(args.data.parent.joinpath('test_pivot.csv'), index_col=0)
