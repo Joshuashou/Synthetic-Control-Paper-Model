@@ -11,9 +11,9 @@ if '/home/jshou' not in SRC_DIR and '/home/schein' not in SRC_DIR:
 # TODO: be more programmatic about this; this is hard-coded for just jshou/schein
 CNET_ID = 'jshou' if 'jshou' in SRC_DIR else 'schein'
 if CNET_ID == 'schein': 
-    PY_SOURCE_STR = 'source /home/schein/miniconda3/etc/profile.d/conda.sh\n# conda activate /home/schein/miniconda3'
+    PY_SOURCE_STR = 'source /home/schein/miniconda3/etc/profile.d/conda.sh\nconda activate /home/schein/miniconda3'
 elif CNET_ID == 'jshou':
-    PY_SOURCE_STR = 'source /home/jshou/miniconda3/etc/profile.d/conda.sh\n# conda activate /home/jshou/miniconda3/envs/sc_env'
+    PY_SOURCE_STR = 'source /home/jshou/miniconda3/etc/profile.d/conda.sh\nconda activate /home/jshou/miniconda3/envs/sc_env'
 
 PYTHON_EXE_PATH = sys.executable
 
