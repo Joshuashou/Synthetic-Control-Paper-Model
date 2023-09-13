@@ -15,9 +15,9 @@ PY_EXEC_STR = sys.executable
 # TODO: be more programmatic about this; this is hard-coded for just jshou/schein
 CNET_ID = 'jshou' if 'jshou' in SRC_DIR else 'schein'
 if CNET_ID == 'schein': 
-    PY_SOURCE_STR = '# source /home/schein/miniconda3/etc/profile.d/conda.sh\n# conda activate /home/schein/miniconda3'
+    PY_SOURCE_STR = 'source /home/schein/miniconda3/etc/profile.d/conda.sh\n# conda activate /home/schein/miniconda3'
 elif CNET_ID == 'jshou':
-    PY_SOURCE_STR = '# source /home/jshou/miniconda3/etc/profile.d/conda.sh\n# conda activate /home/jshou/miniconda3/envs/sc_env'
+    PY_SOURCE_STR = 'source /home/jshou/miniconda3/etc/profile.d/conda.sh\n# conda activate /home/jshou/miniconda3/envs/sc_env'
 
 
 DEFAULT_SBATCH_KWARGS = {
@@ -44,7 +44,7 @@ def create_sbatch(script_path, output_dir=Path('.'), script_exe=PY_EXEC_STR, scr
         f"#SBATCH --mail-user={cnet_id}@uchicago.edu",
         sbatch_kwarg_str,
         source_str,
-        f"# {script_exe} {script_path} {script_arg_str} {script_kwarg_str}"
+        f"{script_exe} {script_path} {script_arg_str} {script_kwarg_str}"
     ]
     sbatch_script = '\n'.join(sbatch_script_lines)
     return sbatch_script
