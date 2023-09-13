@@ -60,8 +60,8 @@ def main(args=None):
     posterior_samples = run_NUTS_with_mask(model=model.model, 
                                            data=train_data,
                                            mask=mask,
-                                           warmup_steps=1000,
-                                           num_samples=2000)
+                                           warmup_steps=2,
+                                           num_samples=2)
     
     # covert to numpy
     posterior_samples = {k: v.numpy() for k, v in posterior_samples.items()}
