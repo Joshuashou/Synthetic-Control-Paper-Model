@@ -21,7 +21,7 @@ def main(args=None):
     p.add_argument('--model', type=str, default='GAP', choices=['GAP', 'PPCA'])
     p.add_argument('--model_seed', type=int, default=None)
     p.add_argument('-k', '--latent_dim', type=int, default=10)
-    p.add_argument('--reg_type', type=str, default='Ridge', options=['Ridge', 'Lasso', 'MLPRegressor'])
+    p.add_argument('--reg_type', type=str, default='Ridge', choices=['Ridge', 'Lasso', 'MLPRegressor'])
 
     if args is None:
         args = sys.argv[1:]
