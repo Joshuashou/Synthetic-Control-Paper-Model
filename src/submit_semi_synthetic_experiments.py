@@ -31,9 +31,9 @@ if __name__ == '__main__':
         if team not in ['Philadelphia', 'Minnesota', 'Baltimore', 'New Orleans']:
             continue
         
-        for model in ['GAP']:
-            for latent_dim in [10]:
-                for seed in [617]:
+        for model in ['GAP', 'PPCA']:
+            for latent_dim in [5, 10, 15]:
+                for seed in [617, 781]:
                     out_dir = data_dir.joinpath('results', model, f'latent_dim_{latent_dim}', f'model_seed_{seed}')
                     out_dir.makedirs_p()
                     if out_dir.joinpath('posterior_samples.npz').exists():
