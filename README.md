@@ -1,10 +1,20 @@
 # Synthetic-Control-Paper-Model
 
+This repo shows the source code for experiments in Synthetic Control Method with Many Outcomes, currently pending revies in JMLR (Journal of Machine Learning Research)
 
-Data and Methodology Based off of paper here:https://www.pnas.org/doi/epdf/10.1073/pnas.2114226119
+The methodology in this paper introduces a novel concept of applying Bayesian models in tackling synthetic control, a popular method for analyzing panel data to estimate causal effects of major policy interventions.
 
-Code located in Synthetic Control Paper.ipynb
+We show that this method can identify causal effects in non-linear systems by analyzing a recent event of opening footbal stadiums during the COVID-19 Pandemic [Garcia Bulle et all., 2022]
 
-Main 2 notebooks for process is "Synth_Control_Paper" and "Bayesian_SC". Synth_Control_Paper replicates the existing paper and saves results in the folder RBSC_Replications. Bayesian_SC produces our results and saves samples into the folder Trained_Samples. Also, when toggled to True in the synthetic control function, saves plots to the folder 'figures'. 
 
-Synth_Control_Draft is a messier version of the whole process, notebook used to experiment with new things before adding to other 2 notebooks, but mostly similar. 
+For NFL stadium counties that opened their stadiums during COVID, we construct a synthetic 'control' dataset that serves as the likely trajectory of cases had they not opened, using the following bayesian factor models: Probabilistic PCA Factorization, and Gamma-Poisson Factorization. We compare these two models with traditional robust synthetic control, and show that they perform better on the placebo-check stadiums, and are more robust to continuity issues in the panel data. 
+
+Results: 
+
+![att_not_allowed](https://github.com/user-attachments/assets/40333514-6e39-4a0e-a97b-86228860f22d)
+
+
+![att_allowed](https://github.com/user-attachments/assets/883ad4f0-b60b-49d1-adeb-36bbc13c1a08)
+
+
+[TTT.pdf](https://github.com/user-attachments/files/18544183/TTT.pdf)
