@@ -11,10 +11,9 @@ For NFL stadium counties that opened their stadiums during COVID, we construct a
 
 Results: 
 
-![att_not_allowed](https://github.com/user-attachments/assets/40333514-6e39-4a0e-a97b-86228860f22d)
+![plots_now_allowed](https://github.com/user-attachments/assets/03239cd9-ad94-4a4b-a2b4-1cec7ccb893b)
 
-
-![att_allowed](https://github.com/user-attachments/assets/883ad4f0-b60b-49d1-adeb-36bbc13c1a08)
+![plots_allowed](https://github.com/user-attachments/assets/8223e504-a21b-4109-88e4-e52863f0bea2)
 
 
 [TTT.pdf](https://github.com/user-attachments/files/18544183/TTT.pdf)
