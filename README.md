@@ -15,5 +15,4 @@ Results:
 
 ![plots_allowed](https://github.com/user-attachments/assets/8223e504-a21b-4109-88e4-e52863f0bea2)
 
-
-[TTT.pdf](https://github.com/user-attachments/files/18544183/TTT.pdf)
+<img width="1260" alt="TTT" src="https://github.com/user-attachments/assets/19ac8451-fc08-43cf-b952-a9083ffbb066" />
